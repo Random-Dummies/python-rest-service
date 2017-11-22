@@ -8,6 +8,7 @@
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from optparse import OptionParser
+from NN_Eval import feedNeuralNet as fnn
 
 class RequestHandler(BaseHTTPRequestHandler):
     
@@ -38,12 +39,10 @@ class RequestHandler(BaseHTTPRequestHandler):
         print("Content Length:", length)
         print("Request headers:", request_headers)
         payload = self.rfile.read(length)
-        print(payload_json)
-        #### Insert Code HERE TO CALL NEURAL NET
+        score = fnn(payload)#Call To Neural Net
         print("Request payload:", payload)
         print("<----- Request End -----\n")
-        Score = 5
-        self.send_response(Score)
+        self.send_response(score)
         self.end_headers()
     
     do_PUT = do_POST
