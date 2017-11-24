@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 # Reflects the requests from HTTP methods GET, POST, PUT, and DELETE
 #curl -i -X GET http://localhost:8080
@@ -9,6 +10,7 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from optparse import OptionParser
 from NN_Eval import feedNeuralNet as fnn
+import json
 
 class RequestHandler(BaseHTTPRequestHandler):
     
@@ -39,10 +41,14 @@ class RequestHandler(BaseHTTPRequestHandler):
         print("Content Length:", length)
         print("Request headers:", request_headers)
         payload = self.rfile.read(length)
+        payloadDict = json.loads(payload.decode("utf-8"))
+        custID = payloadDict["id"]
         score = fnn(payload)#Call To Neural Net
         print("Request payload:", payload)
         print("<----- Request End -----\n")
-        self.send_response(score)
+        http_response = "{\"score\":"+str(score)+",\"id\":"+str(custID)+"}"
+        self.send_response(200)
+        self.send_header("Status", http_response)
         self.end_headers()
     
     do_PUT = do_POST
